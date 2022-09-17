@@ -9,12 +9,26 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.temporal.io/sdk/client"
 
 	app "familyFlows"
 )
 
 func main() {
+
+	// Load .env vars
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	patient := app.Patient{
+		Name:   os.Getenv("PATIENT_NAME"),
+		Number: os.Getenv("PATIENT"),
+	}
+
+	watchers := []string{os.Getenv("WATCHER1"), os.Getenv("WATCHER2")}
 
 	// make temporal client
 	temporal, err := client.Dial(client.Options{})
@@ -29,12 +43,13 @@ func main() {
 	str2 := string([]byte(str1)[:8])
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:           "ifworker-" + str2,
-		TaskQueue:    "insulinFlowWorker",
-		CronSchedule: "0 10,22 * * *",
+		ID:        "ifworker-" + str2,
+		TaskQueue: "insulinFlowWorker",
+		// for immediate start, remove cron
+		//CronSchedule: "0 10,22 * * *",
 	}
 
-	we, err := temporal.ExecuteWorkflow(context.Background(), workflowOptions, app.InsulinWorkflow)
+	we, err := temporal.ExecuteWorkflow(context.Background(), workflowOptions, app.InsulinWorkflow, patient, watchers)
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

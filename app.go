@@ -15,7 +15,6 @@ import (
 
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 
-	"github.com/joho/godotenv"
 	"github.com/twilio/twilio-go"
 )
 
@@ -29,12 +28,13 @@ type Message struct {
 	From   string `json:"phoneNumber"`
 }
 
+type Patient struct {
+	Name   string
+	Number string
+}
+
 func TwilioClient() *twilio.RestClient {
-	// Load .env vars
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+
 	accountSid := os.Getenv("TWILIO_ACCOUNT_SID")
 	authToken := os.Getenv("TWILIO_AUTH_TOKEN")
 	return twilio.NewRestClientWithParams(twilio.ClientParams{
@@ -44,21 +44,16 @@ func TwilioClient() *twilio.RestClient {
 }
 
 // Main workflow
-func InsulinWorkflow(ctx workflow.Context) error {
-	logger := workflow.GetLogger(ctx)
-
-	logger.Info("Starting InsulinWorkflow")
-
+func InsulinWorkflow(ctx workflow.Context, patient Patient, watchers []string) error {
 	var result string
 	insulinTaken := false
-
+	logger := workflow.GetLogger(ctx)
+	logger.Info("Starting InsulinWorkflow")
 	aoptions := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
-
 	ctx = workflow.WithActivityOptions(ctx, aoptions)
-
-	err := workflow.ExecuteActivity(ctx, InsulinSMSSendActivity).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, InsulinSMSSendActivity, patient.Number).Get(ctx, &result)
 	if err != nil {
 		return err
 	}
@@ -76,30 +71,23 @@ func InsulinWorkflow(ctx workflow.Context) error {
 			insulinTaken = true
 			logger.Info("Insulin has been taken. Sending notification")
 			// trigger parent notification of insulin taken
-			parent1 := os.Getenv("PARENT1")
-			parent2 := os.Getenv("PARENT1")
-			patient_name := os.Getenv("PATIENT_NAME")
-			mes := fmt.Sprintf("%s took %d units of insulin just now", patient_name, signal.Amount)
+			mes := fmt.Sprintf("%s took %d units of insulin just now.", patient.Name, signal.Amount)
 			if insulinTaken {
-				SendSMS(TwilioClient(), mes, parent1, parent2)
+				SendSMS(TwilioClient(), mes, watchers)
 			}
 
 		}
 
 	})
 
-	selector.AddFuture(workflow.NewTimer(ctx, time.Minute*15), func(f workflow.Future) {
+	selector.AddFuture(workflow.NewTimer(ctx, time.Second*10), func(f workflow.Future) {
 		// trigger next step after time shown above
 		if !insulinTaken {
 			// since sms hasn't came in with insulin amount, trigger parent notification
 			logger.Info("Insulin not taken. Sending notification")
 			// trigger parent notification of insulin taken
-			parent1 := os.Getenv("PARENT1")
-			parent2 := os.Getenv("PARENT1")
-			patient_name := os.Getenv("PATIENT_NAME")
-			mes := fmt.Sprintf("Alert: %s hasn't taken Levamir yet", patient_name)
-			SendSMS(TwilioClient(), mes, parent1, parent2)
-
+			mes := fmt.Sprintf("Alert: %s hasn't taken Insulin yet", patient.Name)
+			SendSMS(TwilioClient(), mes, watchers)
 		}
 
 	})
@@ -111,12 +99,13 @@ func InsulinWorkflow(ctx workflow.Context) error {
 }
 
 // Send SMS and wait for SMS message to be returned
-func InsulinSMSSendActivity(ctx context.Context) (string, error) {
+func InsulinSMSSendActivity(ctx context.Context, to string) (string, error) {
 
 	// Sens SMS alert to take insulin
-	patient_number := os.Getenv("PATIENT_NUMBER")
-	mes := "Time to take Levamir"
-	SendSMS(TwilioClient(), mes, patient_number)
+	//patient_number := os.Getenv("PATIENT_NUMBER")
+	fmt.Println("patient_number:", to)
+	mes := "Time to take Insulin"
+	SendSMS(TwilioClient(), mes, []string{to})
 
 	return "twillio send success", nil
 }
@@ -149,9 +138,9 @@ func SMSPOSTHandler(ctx context.Context, temporal client.Client, runID, wfID str
 }
 
 // Send SMS via twilio
-func SendSMS(tclient *twilio.RestClient, message string, to ...string) error {
+func SendSMS(tclient *twilio.RestClient, message string, to []string) error {
 	//from := os.Getenv("TWILIO_FROM_PHONE_NUMBER")
-	testing := false
+	testing := true
 	rrom := "+" + os.Getenv("TWILIO_FROM_PHONE_NUMBER")
 	params := &openapi.CreateMessageParams{}
 	params.SetFrom(rrom)
@@ -174,7 +163,6 @@ func SendSMS(tclient *twilio.RestClient, message string, to ...string) error {
 		} else {
 			log.Println("Mock SMS to:", *params.To)
 			log.Println("Mock SMS message:", *params.Body)
-
 		}
 	}
 
