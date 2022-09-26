@@ -49,3 +49,6 @@ Run the workflow
 
 You can see the running process in the Temploral web ui:
 [http://localhost:8080]
+
+
+![image](https://user-images.githubusercontent.com/763917/192355793-8b4339c8-cfe8-4cb2-8609-e70f46172027.png)
