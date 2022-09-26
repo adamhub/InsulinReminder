@@ -33,6 +33,14 @@ CronSchedule: "0 " + cronA + "," + cronB + " * * *"
 In a folder next to the main repo, create a docker-compose folder and clone the docker-compose files:
 > git clone https://github.com/temporalio/docker-compose
 
+
+The code runs a server on port 4000 for recieving SMS messages via POST requests from Twilio. Make sure that is open on your server. If you are running locally you can use ngrok for testing:
+> ngrok http 4000
+The public test url that you recieve there, or alternatively your production server address, will need to be copied to your Twilio SMS webhook URL setting in your Twilio console. It's composed with /sms at the end. For example, if you setup Temporal on your live server, the POST request is open at this URL:
+> https://prod-site.com:4000/sms
+That is the URL you need to add to Twilio as a SMS receive webhook.
+
+
 # Run
 
 Clone the repo. Then get all the dependencies:
