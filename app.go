@@ -139,7 +139,7 @@ func SMSPOSTHandler(ctx context.Context, temporal client.Client, runID, wfID str
 // Send SMS via twilio
 func SendSMS(tclient *twilio.RestClient, message string, to []string) error {
 	//from := os.Getenv("TWILIO_FROM_PHONE_NUMBER")
-	testing := true
+	testing := false
 	rrom := "+" + os.Getenv("TWILIO_FROM_PHONE_NUMBER")
 	params := &openapi.CreateMessageParams{}
 	params.SetFrom(rrom)
