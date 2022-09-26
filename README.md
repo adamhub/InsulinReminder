@@ -20,17 +20,14 @@ WATCHER1=5559998888
 WATCHER2=5559998888
 PATIENT=5559998888
 PATIENT_NAME=Nathan
+CRONA=3
+CRONB=15
 ```
 
-The timer is easily configured in app.go under `CronSchedule`.
+The timer is made from CRONA and CRONB which currently constructs a twice daily timer implimented in `CronSchedule` in starter/main.go.
 
 ```go
-workflowOptions := client.StartWorkflowOptions{
-    ID:        "ifworker-" + str2,
-    TaskQueue: "insulinFlowWorker",
-    // for immediate start, remove cron
-    CronSchedule: "0 10,22 * * *",
-}
+CronSchedule: "0 " + cronA + "," + cronB + " * * *"
 ```
 
 # Run

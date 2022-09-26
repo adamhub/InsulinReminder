@@ -42,11 +42,14 @@ func main() {
 	str1 := strconv.Itoa(rand.Int())
 	str2 := string([]byte(str1)[:8])
 
+	cronA := os.Getenv("CRONA")
+	cronB := os.Getenv("CRONB")
+
 	workflowOptions := client.StartWorkflowOptions{
 		ID:        "ifworker-" + str2,
 		TaskQueue: "insulinFlowWorker",
 		// for immediate start, remove cron
-		//CronSchedule: "0 10,22 * * *",
+		CronSchedule: "0 " + cronA + "," + cronB + " * * *",
 	}
 
 	we, err := temporal.ExecuteWorkflow(context.Background(), workflowOptions, app.InsulinWorkflow, patient, watchers)
