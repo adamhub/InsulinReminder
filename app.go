@@ -102,7 +102,6 @@ func InsulinWorkflow(ctx workflow.Context, patient Patient, watchers []string) e
 func InsulinSMSSendActivity(ctx context.Context, to string) (string, error) {
 
 	// Sens SMS alert to take insulin
-	//patient_number := os.Getenv("PATIENT_NUMBER")
 	fmt.Println("patient_number:", to)
 	mes := "Time to take Insulin"
 	SendSMS(TwilioClient(), mes, []string{to})

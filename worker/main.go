@@ -7,7 +7,7 @@ import (
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
 
-	app "familyFlows"
+	app "insulinReminder"
 )
 
 // Temporal Worker

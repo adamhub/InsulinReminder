@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	"go.temporal.io/sdk/client"
 
-	app "familyFlows"
+	app "insulinReminder"
 )
 
 func main() {
@@ -79,6 +79,5 @@ func main() {
 	if err != nil {
 		log.Fatalln("Unable get workflow result", err)
 	}
-	log.Println("Workflow result:", result)
 
 }
