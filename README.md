@@ -12,7 +12,7 @@ You will need Go and Docker Compose installed.
 
 In the root of the repo directory, create a .env file. Here's an example:
 
-```
+```conf
 TWILIO_ACCOUNT_SID=1289h23r987h237y327623498
 TWILIO_AUTH_TOKEN=asjhasouihwefoief980308238
 TIWLIO_FROM_NUMBER=15559998888
@@ -30,22 +30,36 @@ The timer is made from CRONA and CRONB which currently constructs a twice daily 
 CronSchedule: "0 " + cronA + "," + cronB + " * * *"
 ```
 
+In a folder next to the main repo, create a docker-compose folder and clone the docker-compose files:
+> git clone https://github.com/temporalio/docker-compose
+
 # Run
 
 Clone the repo. Then get all the dependencies:
-> go mod init
+```bash
+cd InsulinReminder
+go mod init
+```
 
 Start Temporal
-> docker-compose up
+```bash
+cd docker-compose
+docker-compose up
+```
 
 Start the worker
-> go run woker/main.go
+```bash
+cd ../InsulinReminder
+go run woker/main.go
+```
 
 Run the workflow
-> go run starter/main.go
+```bash
+go run starter/main.go
+```
 
 You can see the running process in the Temploral web ui:
-[http://localhost:8080]
+http://localhost:8080
 
 
 ![image](https://user-images.githubusercontent.com/763917/192355793-8b4339c8-cfe8-4cb2-8609-e70f46172027.png)
