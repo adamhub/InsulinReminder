@@ -8,14 +8,14 @@ Screen capture animation here:
 
 # Setup
 
-You will need Go and Docker Compose installed. 
+You will need Go and Docker Compose installed. If you don't want to spin up Temporal from Docker, a lighter option is [Temporalite](https://github.com/temporalio/temporalite). Note that you have to create ~/.config/temporalite/db directories. Skip the Docker Compose directions below if you went this route.
 
 In the root of the repo directory, create a .env file. Here's an example:
 
 ```conf
 TWILIO_ACCOUNT_SID=1289h23r987h237y327623498
 TWILIO_AUTH_TOKEN=asjhasouihwefoief980308238
-TIWLIO_FROM_NUMBER=15559998888
+TWILIO_FROM=15559998888
 WATCHER1=5559998888
 WATCHER2=5559998888
 PATIENT=5559998888
@@ -67,7 +67,7 @@ go run starter/main.go
 ```
 
 You can see the running process in the Temploral web ui:
-http://localhost:8080
+http://localhost:8080 or temporalite at http://localhost:8233
 
 
 ![image](https://user-images.githubusercontent.com/763917/192355793-8b4339c8-cfe8-4cb2-8609-e70f46172027.png)

@@ -13,6 +13,7 @@ import (
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"
 
+	"github.com/joho/godotenv"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 
 	"github.com/twilio/twilio-go"
@@ -34,6 +35,12 @@ type Patient struct {
 }
 
 func TwilioClient() *twilio.RestClient {
+
+	// Load .env vars
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
 
 	accountSid := os.Getenv("TWILIO_ACCOUNT_SID")
 	authToken := os.Getenv("TWILIO_AUTH_TOKEN")
@@ -138,11 +145,16 @@ func SMSPOSTHandler(ctx context.Context, temporal client.Client, runID, wfID str
 
 // Send SMS via twilio
 func SendSMS(tclient *twilio.RestClient, message string, to []string) error {
-	//from := os.Getenv("TWILIO_FROM_PHONE_NUMBER")
+	// Load .env vars
+	err := godotenv.Overload()
+	if err != nil {
+		panic(err)
+	}
+
 	testing := false
-	rrom := "+" + os.Getenv("TWILIO_FROM_PHONE_NUMBER")
+	from := "+" + os.Getenv("TWILIO_FROM")
 	params := &openapi.CreateMessageParams{}
-	params.SetFrom(rrom)
+	params.SetFrom(from)
 	params.SetBody(message)
 
 	// send sms
