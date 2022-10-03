@@ -87,7 +87,7 @@ func InsulinWorkflow(ctx workflow.Context, patient Patient, watchers []string) e
 
 	})
 
-	selector.AddFuture(workflow.NewTimer(ctx, time.Second*10), func(f workflow.Future) {
+	selector.AddFuture(workflow.NewTimer(ctx, time.Minute*15), func(f workflow.Future) {
 		// trigger next step after time shown above
 		if !insulinTaken {
 			// since sms hasn't came in with insulin amount, trigger parent notification

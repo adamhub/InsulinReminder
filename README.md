@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/joho/godotenv)](https://goreportcard.com/report/github.com/joho/godotenv)
 
-A SMS based, Temploral.io based workflow which reminders a patient to take insulin and either escalates an alert to separate watchers should they not take it, or reports what they have taken. The missed alert happens after 15 minutes. See my [blog article](https://adamtemple.co/building-a-medication-reminder-workflow-with-accountability.html) for more explenation.
+A SMS based, [Temploral.io](https://temporal.io) based workflow which reminders a patient to take insulin and either escalates an alert to separate watchers should they not take it, or reports what they have taken. The missed alert happens after 15 minutes. See my [blog article](https://adamtemple.co/building-a-medication-reminder-workflow-with-accountability.html) for more explenation.
 
 # Setup
 
