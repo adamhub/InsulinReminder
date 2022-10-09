@@ -119,7 +119,7 @@ func InsulinSMSSendActivity(ctx context.Context, to string) (string, error) {
 // Trigger a signal from incoming SMS
 func SMSPOSTHandler(ctx context.Context, temporal client.Client, runID, wfID string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		w.Header().Set("Content-Type", "text/xml")
 
 		err := req.ParseForm()
 		if err != nil {
@@ -139,6 +139,10 @@ func SMSPOSTHandler(ctx context.Context, temporal client.Client, runID, wfID str
 			log.Fatalln("Error sending the Signal foo", err)
 			return
 		}
+
+		w.Header().Set("Content-Type", "text/xml")
+		w.WriteHeader(200)
+		w.Write([]byte("<Response></Response>"))
 
 	}
 }
